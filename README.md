@@ -26,7 +26,6 @@ Whether you're a beginner trying to understand the landscape of BJJ or an experi
 - **Category Filtering**: Show/hide specific categories (Escapes, Submissions, Sweeps, Passes, Takedowns, Counters)
 - **Dynamic Layout**: Multi-column layout for easy navigation
 - **Zoom & Pan**: Explore the full diagram with intuitive zoom controls
-- **Gi and No-Gi**: Techniques marked for applicability
 - **Detailed Instructions**: Step-by-step breakdowns, key points, and common mistakes
 
 ## 🎯 How to Use
@@ -95,12 +94,11 @@ Techniques are presented as educational reference. Always practice under the sup
 **Current Version**: Contains 70+ core techniques across all positions with detailed instructions.
 
 **Future Enhancements**:
+- Video/GIF demonstrations
 - User login and authentication
 - Personal training notes for each technique
 - Shared technique comments and community insights
-- Video/GIF demonstrations
-- Additional advanced techniques
-- Position hierarchy visualization
+- Additional techniques and counters
 
 ## 📄 License
 
