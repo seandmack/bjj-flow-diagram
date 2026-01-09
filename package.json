@@ -1,0 +1,39 @@
+{
+  "name": "bjj-flow-diagram",
+  "version": "1.0.0",
+  "description": "Brazilian Jiu-Jitsu Flow Diagram - Interactive visualization with comprehensive UI testing",
+  "main": "index.html",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
+    "serve": "npx http-server -p 8080 -c-1",
+    "test:ui": "npm run serve & sleep 2 && npm test",
+    "postinstall": "npx puppeteer browsers install chrome || echo 'Warning: Chrome installation failed. Tests may not run without a browser.'"
+  },
+  "keywords": [
+    "bjj",
+    "brazilian-jiu-jitsu",
+    "flow-diagram",
+    "d3js",
+    "visualization",
+    "puppeteer",
+    "testing"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "puppeteer": "^23.9.0",
+    "http-server": "^14.1.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "testTimeout": 30000,
+    "verbose": true
+  }
+}
