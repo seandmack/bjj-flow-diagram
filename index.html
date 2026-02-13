@@ -4756,6 +4756,7 @@
             const techniqueEnter = techniqueSelection.enter()
                 .append('g')
                 .attr('class', 'node technique-node')
+                .attr('data-category', d => d.category)
                 .attr('transform', d => `translate(${d.adjustedX}, ${d.adjustedY})`)
                 .style('opacity', 0)
                 .on('click', (event, d) => showTechniqueDetail(d));

@@ -7,7 +7,7 @@ import time
 import os
 
 # Base URL for testing - HTML file is in parent directory
-BASE_URL = "http://localhost:8000/index.html"
+BASE_URL = "file:///workspaces/bjj-flow-diagram/index.html"
 
 
 @pytest.fixture(scope="session")

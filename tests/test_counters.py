@@ -11,29 +11,32 @@ def test_counter_toggle_button(page):
     """Test that the counter toggle button works."""
     wait_for_diagram_ready(page)
     
-    # Find the counter toggle button
-    counter_toggle = page.locator('.legend-item:has-text("Counter")')
+    # Find the counter category toggle button (not the legend item)
+    counter_toggle = page.locator('button[data-category="counter"]')
     assert counter_toggle.is_visible()
+    assert 'active' in counter_toggle.get_attribute('class'), "Counter button should start as active"
     
     # Click to toggle off
     counter_toggle.click()
     page.wait_for_timeout(600)  # Wait for transition
     
-    # Verify counters are hidden
-    counters = page.locator('[data-category="counter"]')
-    if counters.count() > 0:
-        first_counter = counters.first
-        # Check if hidden (display: none or visibility: hidden)
-        assert not first_counter.is_visible() or first_counter.get_attribute('opacity') == '0'
+    # Verify the button is no longer active
+    assert 'active' not in counter_toggle.get_attribute('class'), "Counter button should not be active after clicking"
+    
+    # Verify no counter technique nodes are rendered
+    counter_nodes = page.locator('.technique-node[data-category="counter"]')
+    assert counter_nodes.count() == 0, "No counter nodes should be visible when toggle is off"
     
     # Click to toggle on
     counter_toggle.click()
     page.wait_for_timeout(600)
     
-    # Verify counters are visible again
-    if counters.count() > 0:
-        first_counter = counters.first
-        assert first_counter.is_visible()
+    # Verify the button is active again
+    assert 'active' in counter_toggle.get_attribute('class'), "Counter button should be active after clicking again"
+    
+    # Verify counter nodes are rendered again
+    counter_nodes = page.locator('.technique-node[data-category="counter"]')
+    assert counter_nodes.count() > 0, "Counter nodes should be visible when toggle is on"
 
 
 @pytest.mark.visual
