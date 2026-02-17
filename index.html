@@ -4731,7 +4731,7 @@
             positionEnter.append('text')
                 .attr('class', 'node-text position-text')
                 .attr('y', 5)
-                .text(d => d.name)
+                .text(d => d.name + ' ')
                 .call(wrap, 70);
             
             // Update all positions (existing + new)
@@ -4774,7 +4774,7 @@
             techniqueEnter.append('text')
                 .attr('class', 'node-text')
                 .attr('y', -5)
-                .text(d => d.name)
+                .text(d => d.name + ' ')
                 .call(wrap, 110);
             
             // Difficulty badges
