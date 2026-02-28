@@ -38,7 +38,7 @@ def page(browser):
     page.close()
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def screenshot_on_failure(request, page):
     """
     Automatically capture screenshot on test failure.
@@ -68,7 +68,7 @@ def wait_for_diagram_ready(page):
     """Wait for the diagram to be fully loaded and rendered."""
     page.wait_for_selector('#flow-diagram', state='visible')
     page.wait_for_selector('.position-node', state='visible')
-    time.sleep(0.5)  # Additional wait for D3 transitions
+    time.sleep(1.0)  # Additional wait for D3 transitions
 
 
 def get_element_position(page, selector):

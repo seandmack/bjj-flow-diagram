@@ -4730,6 +4730,7 @@
             
             positionEnter.append('text')
                 .attr('class', 'node-text position-text')
+                .attr('data-id', d => d.id)
                 .attr('y', 5)
                 .text(d => d.name)
                 .call(wrap, 70);
@@ -4756,7 +4757,9 @@
             const techniqueEnter = techniqueSelection.enter()
                 .append('g')
                 .attr('class', 'node technique-node')
+                .attr('data-id', d => d.id)                 // expose id for testing
                 .attr('data-category', d => d.category)
+                .attr('data-difficulty', d => d.difficulty)  // expose difficulty for testing
                 .attr('transform', d => `translate(${d.adjustedX}, ${d.adjustedY})`)
                 .style('opacity', 0)
                 .on('click', (event, d) => showTechniqueDetail(d));
