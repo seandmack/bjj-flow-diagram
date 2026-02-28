@@ -9,10 +9,13 @@ import sys
 import subprocess
 import platform
 
-def run_command(cmd, shell=False):
+def run_command(cmd, shell=False, suppress_output=True):
     """Run a command and return success status."""
     try:
-        subprocess.run(cmd, shell=shell, check=True, capture_output=True)
+        if suppress_output:
+            subprocess.run(cmd, shell=shell, check=True, capture_output=True)
+        else:
+            subprocess.run(cmd, shell=shell, check=True)
         return True
     except subprocess.CalledProcessError as e:
         print(f"Error: {e.stderr.decode() if e.stderr else str(e)}")
@@ -31,6 +34,21 @@ def main():
         sys.exit(1)
     
     print(f"✅ Python {sys.version.split()[0]} found")
+
+    # Install system dependencies on Linux
+    if platform.system() == "Linux":
+        print("\n📦 Installing system dependencies for Playwright...")
+        system_deps = [
+            "libatk1.0-0t64", "libatk-bridge2.0-0t64", "libcups2t64",
+            "libdrm2", "libxkbcommon0", "libatspi2.0-0t64",
+            "libxcomposite1", "libxdamage1", "libxfixes3",
+            "libxrandr2", "libgbm1", "libasound2t64"
+        ]
+        cmd = ["sudo", "apt-get", "install", "-y"] + system_deps
+        if not run_command(cmd, suppress_output=False):
+            print("⚠️  System dependencies installation had issues, but continuing...")
+        else:
+            print("✅ System dependencies installed")
 
     # Create virtual environment
     print("\n📦 Creating virtual environment...")

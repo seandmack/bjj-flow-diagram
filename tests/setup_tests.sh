@@ -14,6 +14,23 @@ fi
 
 echo "✅ Python 3 found"
 
+# Install system dependencies on Linux
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    echo ""
+    echo "📦 Installing system dependencies for Playwright..."
+    sudo apt-get update > /dev/null 2>&1
+    sudo apt-get install -y \
+        libatk1.0-0t64 libatk-bridge2.0-0t64 libcups2t64 \
+        libdrm2 libxkbcommon0 libatspi2.0-0t64 \
+        libxcomposite1 libxdamage1 libxfixes3 \
+        libxrandr2 libgbm1 libasound2t64 > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "✅ System dependencies installed"
+    else
+        echo "⚠️  System dependencies installation had issues, but continuing..."
+    fi
+fi
+
 # Create virtual environment
 echo ""
 echo "📦 Creating virtual environment..."
