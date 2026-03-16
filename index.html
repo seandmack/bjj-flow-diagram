@@ -318,6 +318,23 @@
             font-style: italic;
         }
         
+        /* Zoom control buttons */
+        .zoom-btn {
+            touch-action: manipulation; /* prevent double-tap zoom on buttons */
+        }
+
+        @media (max-width: 768px) {
+            .zoom-controls {
+                top: 10px !important;
+                left: 10px !important;
+            }
+            .zoom-btn {
+                width: 48px !important;
+                height: 48px !important;
+                font-size: 20px !important;
+            }
+        }
+
         /* D3 Styles */
         .node {
             cursor: pointer;
@@ -408,21 +425,150 @@
         }
         
         @media (max-width: 768px) {
+            /* ── Header ── */
+            header {
+                padding: 0.6rem 0.875rem;
+            }
+
+            h1 {
+                font-size: 1.25rem;
+                margin-bottom: 0.1rem;
+            }
+
+            .subtitle {
+                font-size: 0.65rem;
+            }
+
+            /* ── Filter controls: stack vertically, each row scrolls horizontally ── */
+            .controls {
+                flex-direction: column;
+                gap: 0.4rem;
+                margin-top: 0.6rem;
+                overflow: visible;
+            }
+
+            .filter-group {
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                /* hide scrollbar but keep scroll */
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                padding-bottom: 1px;
+            }
+
+            .filter-group::-webkit-scrollbar {
+                display: none;
+            }
+
+            .filter-label {
+                white-space: nowrap;
+                font-size: 0.7rem;
+                flex-shrink: 0;
+            }
+
+            .filter-btn,
+            .category-toggle {
+                padding: 0.35rem 0.7rem;
+                font-size: 0.72rem;
+                white-space: nowrap;
+                flex-shrink: 0;
+                /* bigger touch target via min-height */
+                min-height: 36px;
+            }
+
+            /* ── Main container ── */
+            .container {
+                padding: 0.5rem;
+            }
+
+            /* ── Diagram: fixed-height viewport so D3 pan/zoom handles all navigation ── */
+            #diagram-container {
+                height: calc(100dvh - 160px);
+                min-height: 350px;
+                overflow: hidden;
+                margin-bottom: 0;
+            }
+
+            /* ── Detail views ── */
             .detail-content {
                 grid-template-columns: 1fr;
+                gap: 1.5rem;
             }
-            
-            header {
-                padding: 1.5rem;
+
+            .detail-view {
+                padding: 1.25rem;
             }
-            
-            h1 {
-                font-size: 2rem;
+
+            .detail-title {
+                font-size: 1.6rem;
             }
-            
+
+            .detail-header {
+                flex-direction: column;
+                gap: 0.75rem;
+                margin-bottom: 1.25rem;
+                padding-bottom: 1.25rem;
+            }
+
+            .back-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+                align-self: flex-start;
+            }
+
+            /* ── Legend: inline wrap (already static on mobile) ── */
             .legend {
                 position: static;
-                margin-bottom: 1rem;
+                margin-bottom: 0.5rem;
+                padding: 0.75rem;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.4rem 0.75rem;
+                align-items: center;
+            }
+
+            .legend h4 {
+                width: 100%;
+                margin-bottom: 0;
+                font-size: 0.85rem;
+            }
+
+            .legend-item {
+                margin-bottom: 0;
+                font-size: 0.78rem;
+            }
+
+            .legend-color {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        /* Mobile gesture hint */
+        .mobile-hint {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-hint {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.75rem;
+                padding: 0.5rem 0.75rem;
+                color: var(--text-tertiary);
+                font-size: 0.72rem;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+
+            .mobile-hint span {
+                display: flex;
+                align-items: center;
+                gap: 0.3rem;
             }
         }
     </style>
@@ -489,6 +635,13 @@
         <!-- Flow Diagram -->
         <div id="diagram-container">
             <svg id="flow-diagram"></svg>
+        </div>
+
+        <!-- Mobile gesture hint (hidden on desktop via CSS) -->
+        <div class="mobile-hint">
+            <span>👆 Tap a node to explore</span>
+            <span>🤏 Pinch to zoom</span>
+            <span>✋ Drag to pan</span>
         </div>
         
         <!-- Position Detail View -->
@@ -4132,14 +4285,18 @@
                 .on('zoom', (event) => {
                     g.attr('transform', event.transform);
                 });
-            
+
             svg.call(zoom);
-            
+
             g = svg.append('g')
                 .attr('transform', `translate(${width/2}, 50)`);
-            
+
+            // On mobile, start zoomed out so the whole diagram width is visible
+            const isMobile = width <= 768;
+            const initialScale = isMobile ? 0.4 : 1;
+            const initialTY = isMobile ? 20 : 50;
             // Set initial zoom transform
-            svg.call(zoom.transform, d3.zoomIdentity.translate(width/2, 50));
+            svg.call(zoom.transform, d3.zoomIdentity.translate(width/2, initialTY).scale(initialScale));
             
             // Add zoom controls
             addZoomControls(zoom);
@@ -4914,6 +5071,8 @@
             document.getElementById('position-detail').classList.add('active');
             document.getElementById('technique-detail').classList.remove('active');
             document.querySelector('.legend').style.display = 'none';
+            const hint = document.querySelector('.mobile-hint');
+            if (hint) hint.style.display = 'none';
             
             document.getElementById('position-name').textContent = position.name;
             document.getElementById('position-description').textContent = position.description;
@@ -4937,6 +5096,8 @@
             document.getElementById('technique-detail').classList.add('active');
             document.getElementById('position-detail').classList.remove('active');
             document.querySelector('.legend').style.display = 'none';
+            const hint = document.querySelector('.mobile-hint');
+            if (hint) hint.style.display = 'none';
             
             document.getElementById('technique-name').textContent = technique.name;
             document.getElementById('technique-category').textContent = technique.category;
@@ -4964,6 +5125,9 @@
             document.getElementById('position-detail').classList.remove('active');
             document.getElementById('technique-detail').classList.remove('active');
             document.querySelector('.legend').style.display = 'block';
+            // Restore hint (CSS media query controls whether it actually shows)
+            const hint = document.querySelector('.mobile-hint');
+            if (hint) hint.style.display = '';
         }
         
         // Handle window resize
@@ -4971,7 +5135,11 @@
             const container = document.getElementById('diagram-container');
             const width = container.clientWidth;
             svg.attr('width', width);
-            g.attr('transform', `translate(${width/2}, 50)`);
+            const isMobileResize = width <= 768;
+            const resizeScale = isMobileResize ? 0.4 : 1;
+            const resizeTY = isMobileResize ? 20 : 50;
+            // Reset the group transform directly (keeps zoom behaviour intact)
+            g.attr('transform', `translate(${width/2}, ${resizeTY}) scale(${resizeScale})`);
             updateDiagram();
         });
         
