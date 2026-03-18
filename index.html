@@ -69,19 +69,19 @@
             text-transform: uppercase;
         }
         
-        /* Controls */
+        /* Controls — always two rows (Difficulty + Categories) */
         .controls {
             display: flex;
-            gap: 0.75rem;
-            align-items: center;
+            flex-direction: column;
+            gap: 0.5rem;
             margin-top: 1rem;
-            flex-wrap: nowrap;
         }
-        
+
         .filter-group {
             display: flex;
             gap: 0.5rem;
             align-items: center;
+            flex-wrap: wrap;
         }
         
         .filter-label {
@@ -449,42 +449,30 @@
                 display: none;
             }
 
-            /* ── Filters: two stacked rows with independent scroll ── */
+            /* ── Filters: compact sizing + horizontal scroll per row ── */
             .controls {
-                flex-direction: column;
                 gap: 0.3rem;
                 margin-top: 0.4rem;
             }
 
-            /* Show labels as compact inline text */
+            /* Compact labels */
             .filter-label {
-                display: inline;
                 font-size: 0.65rem;
-                flex-shrink: 0;
                 margin-right: 0.25rem;
             }
 
-            /* Each group scrolls independently — overflow on GROUP, not parent */
+            /* Each row scrolls independently */
             .filter-group {
-                display: flex;
                 flex-wrap: nowrap;
-                gap: 0.35rem;
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
                 scrollbar-width: none;
                 -ms-overflow-style: none;
                 max-width: 100%;
-                flex-shrink: 1;
             }
 
             .filter-group::-webkit-scrollbar {
                 display: none;
-            }
-
-            /* Remove border separator — separate rows make it unnecessary */
-            .filter-group + .filter-group {
-                padding-left: 0;
-                border-left: none;
             }
 
             .filter-btn,
