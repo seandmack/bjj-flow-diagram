@@ -4330,8 +4330,10 @@
                 .style('justify-content', 'center')
                 .style('box-shadow', '0 2px 8px rgba(0,0,0,0.08)')
                 .on('click', () => {
-                    const ct = document.getElementById('diagram-container');
-                    svg.transition().duration(300).call(zoom.scaleBy, 1.3, [ct.clientWidth / 2, ct.clientHeight / 2]);
+                    const r = document.getElementById('flow-diagram').getBoundingClientRect();
+                    const cx = r.width / 2;
+                    const cy = (Math.max(0, r.top) + Math.min(window.innerHeight, r.bottom)) / 2 - r.top;
+                    svg.transition().duration(300).call(zoom.scaleBy, 1.3, [cx, cy]);
                 })
                 .on('mouseenter', function() {
                     d3.select(this).style('border-color', 'var(--accent-gold)');
@@ -4357,8 +4359,10 @@
                 .style('justify-content', 'center')
                 .style('box-shadow', '0 2px 8px rgba(0,0,0,0.08)')
                 .on('click', () => {
-                    const ct = document.getElementById('diagram-container');
-                    svg.transition().duration(300).call(zoom.scaleBy, 0.7, [ct.clientWidth / 2, ct.clientHeight / 2]);
+                    const r = document.getElementById('flow-diagram').getBoundingClientRect();
+                    const cx = r.width / 2;
+                    const cy = (Math.max(0, r.top) + Math.min(window.innerHeight, r.bottom)) / 2 - r.top;
+                    svg.transition().duration(300).call(zoom.scaleBy, 0.7, [cx, cy]);
                 })
                 .on('mouseenter', function() {
                     d3.select(this).style('border-color', 'var(--accent-gold)');
