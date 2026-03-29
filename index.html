@@ -1203,11 +1203,12 @@
             }
 
             const uiConfig = {
-                signInSuccessUrl: undefined,
+                signInFlow: 'popup',
                 signInOptions: [
                     {
                         provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-                        requireDisplayName: true
+                        requireDisplayName: true,
+                        signInMethod: firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD
                     }
                 ],
                 callbacks: {
