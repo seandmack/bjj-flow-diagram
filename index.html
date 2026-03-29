@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BJJ Technique Flow Diagram</title>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Firebase compat SDK (no bundler needed) -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <!-- FirebaseUI for email/password login widget -->
+    <script src="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.js"></script>
+    <link rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.css">
     <style>
         :root {
             --bg-primary: #ffffff;
@@ -425,6 +432,31 @@
         }
         
         @media (max-width: 768px) {
+            .auth-controls {
+                gap: 0.4rem;
+            }
+
+            .auth-user-name {
+                font-size: 0.75rem;
+                max-width: 90px;
+            }
+
+            .auth-btn {
+                padding: 0.3rem 0.65rem;
+                font-size: 0.72rem;
+            }
+
+            .auth-modal-content {
+                width: 95%;
+                padding: 1.25rem;
+            }
+
+            .notes-section,
+            .comments-section {
+                margin-top: 1.25rem;
+                padding-top: 1.25rem;
+            }
+
             /* ── Full-height flex layout so diagram fills whatever space the header leaves ── */
             body {
                 height: 100dvh;
@@ -538,6 +570,315 @@
             }
         }
 
+        /* ── Auth Controls ── */
+        .header-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .auth-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .auth-user-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .auth-btn {
+            padding: 0.45rem 1rem;
+            background: white;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .auth-btn:hover {
+            border-color: var(--accent-gold);
+        }
+
+        .auth-btn-primary {
+            background: var(--accent-gold);
+            border-color: var(--accent-gold);
+            color: white;
+        }
+
+        .auth-btn-primary:hover {
+            background: var(--accent-gold-dim);
+            border-color: var(--accent-gold-dim);
+        }
+
+        /* ── Auth Modal ── */
+        #auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #auth-modal.active {
+            display: flex;
+        }
+
+        .auth-modal-content {
+            background: white;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            padding: 2rem;
+            max-width: 420px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .auth-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-modal-header h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .auth-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-tertiary);
+            padding: 0.25rem;
+            line-height: 1;
+        }
+
+        .auth-modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        /* FirebaseUI overrides to match app theme */
+        .firebaseui-container {
+            font-family: 'DM Sans', sans-serif !important;
+        }
+
+        .firebaseui-idp-button,
+        .mdl-button--raised {
+            border-radius: 8px !important;
+        }
+
+        .firebaseui-id-submit {
+            background: var(--accent-gold) !important;
+        }
+
+        /* ── Notes Section ── */
+        .notes-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .notes-section h3 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent-gold);
+        }
+
+        .notes-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            line-height: 1.6;
+            resize: vertical;
+            background: var(--bg-secondary);
+        }
+
+        .notes-textarea:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+        }
+
+        .notes-status {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+            min-height: 1.2em;
+        }
+
+        /* ── Comments Section ── */
+        .comments-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .comments-section h3 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent-gold);
+        }
+
+        .comment-count {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+            font-weight: 400;
+        }
+
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .comment-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .comment-time {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .comment-body {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .comment-delete {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.25rem 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .comment-delete:hover {
+            color: #C75B5C;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+            resize: vertical;
+            background: white;
+        }
+
+        .comment-form textarea:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+        }
+
+        .comment-form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 0.5rem;
+        }
+
+        .comment-post-btn {
+            padding: 0.5rem 1.2rem;
+            background: var(--accent-gold);
+            border: 2px solid var(--accent-gold);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .comment-post-btn:hover {
+            background: var(--accent-gold-dim);
+            border-color: var(--accent-gold-dim);
+        }
+
+        .comment-post-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .auth-prompt {
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+            font-style: italic;
+        }
+
+        .comments-empty {
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+            font-style: italic;
+            padding: 0.5rem 0;
+        }
+
         /* Mobile gesture hint */
         .mobile-hint {
             display: none;
@@ -566,9 +907,16 @@
 </head>
 <body>
     <header>
-        <h1>Brazilian Jiu-Jitsu Flow Diagram</h1>
-        <p class="subtitle">Position Hierarchy & Technique Relationships</p>
-        
+        <div class="header-top-row">
+            <div>
+                <h1>Brazilian Jiu-Jitsu Flow Diagram</h1>
+                <p class="subtitle">Position Hierarchy & Technique Relationships</p>
+            </div>
+            <div class="auth-controls" id="auth-controls">
+                <button class="auth-btn auth-btn-primary" id="auth-sign-in-btn" onclick="showAuthModal()">Sign In</button>
+            </div>
+        </div>
+
         <div class="controls">
             <div class="filter-group">
                 <span class="filter-label">Difficulty:</span>
@@ -671,8 +1019,33 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Notes Section (position) -->
+            <div class="notes-section" id="position-notes-section">
+                <h3>My Training Notes</h3>
+                <div id="position-notes-auth-prompt" class="auth-prompt">Sign in to add personal training notes</div>
+                <div id="position-notes-form" style="display:none;">
+                    <textarea class="notes-textarea" id="position-notes-input" placeholder="Add your personal notes for this position..."></textarea>
+                    <div class="notes-status" id="position-notes-status"></div>
+                </div>
+            </div>
+
+            <!-- Comments Section (position) -->
+            <div class="comments-section" id="position-comments-section">
+                <h3>Community Comments <span class="comment-count" id="position-comment-count"></span></h3>
+                <div id="position-comments-auth-prompt" class="auth-prompt">Sign in to view and post comments</div>
+                <div id="position-comments-content" style="display:none;">
+                    <div class="comments-list" id="position-comments-list"></div>
+                    <div class="comment-form">
+                        <textarea id="position-comment-input" placeholder="Share an insight or tip..."></textarea>
+                        <div class="comment-form-actions">
+                            <button class="comment-post-btn" id="position-comment-post" onclick="postCommentHandler('position')">Post Comment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        
+
         <!-- Technique Detail View -->
         <div id="technique-detail" class="detail-view">
             <div class="detail-header">
@@ -716,11 +1089,379 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Notes Section (technique) -->
+            <div class="notes-section" id="technique-notes-section">
+                <h3>My Training Notes</h3>
+                <div id="technique-notes-auth-prompt" class="auth-prompt">Sign in to add personal training notes</div>
+                <div id="technique-notes-form" style="display:none;">
+                    <textarea class="notes-textarea" id="technique-notes-input" placeholder="Add your personal notes for this technique..."></textarea>
+                    <div class="notes-status" id="technique-notes-status"></div>
+                </div>
+            </div>
+
+            <!-- Comments Section (technique) -->
+            <div class="comments-section" id="technique-comments-section">
+                <h3>Community Comments <span class="comment-count" id="technique-comment-count"></span></h3>
+                <div id="technique-comments-auth-prompt" class="auth-prompt">Sign in to view and post comments</div>
+                <div id="technique-comments-content" style="display:none;">
+                    <div class="comments-list" id="technique-comments-list"></div>
+                    <div class="comment-form">
+                        <textarea id="technique-comment-input" placeholder="Share an insight or tip..."></textarea>
+                        <div class="comment-form-actions">
+                            <button class="comment-post-btn" id="technique-comment-post" onclick="postCommentHandler('technique')">Post Comment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal">
+        <div class="auth-modal-content">
+            <div class="auth-modal-header">
+                <h2>Sign In</h2>
+                <button class="auth-modal-close" onclick="hideAuthModal()">&times;</button>
+            </div>
+            <div id="firebaseui-auth-container"></div>
         </div>
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="firebase-config.js"></script>
     <script>
+        // ============================================================
+        // Firebase Auth, Notes & Comments
+        // ============================================================
+
+        let currentUser = null;
+        let firebaseUIInstance = null;
+        let currentDetailTarget = null; // { id, type, name } of the currently viewed position/technique
+        let noteSaveTimer = null;
+
+        // --- Auth State ---
+        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+            firebase.auth().onAuthStateChanged(user => {
+                currentUser = user;
+                updateAuthUI();
+                updateNotesAndCommentsVisibility();
+                // If a detail view is open, reload its notes/comments
+                if (currentDetailTarget) {
+                    loadNoteForCurrentTarget();
+                    loadCommentsForCurrentTarget();
+                }
+            });
+        }
+
+        function updateAuthUI() {
+            const container = document.getElementById('auth-controls');
+            if (!container) return;
+
+            if (currentUser) {
+                const displayName = currentUser.displayName || currentUser.email || 'User';
+                container.innerHTML = `
+                    <span class="auth-user-name" title="${currentUser.email || ''}">${displayName}</span>
+                    <button class="auth-btn" onclick="signOut()">Sign Out</button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button class="auth-btn auth-btn-primary" id="auth-sign-in-btn" onclick="showAuthModal()">Sign In</button>
+                `;
+            }
+        }
+
+        function updateNotesAndCommentsVisibility() {
+            const types = ['position', 'technique'];
+            types.forEach(type => {
+                const notesPrompt = document.getElementById(`${type}-notes-auth-prompt`);
+                const notesForm = document.getElementById(`${type}-notes-form`);
+                const commentsPrompt = document.getElementById(`${type}-comments-auth-prompt`);
+                const commentsContent = document.getElementById(`${type}-comments-content`);
+
+                if (currentUser) {
+                    if (notesPrompt) notesPrompt.style.display = 'none';
+                    if (notesForm) notesForm.style.display = 'block';
+                    if (commentsPrompt) commentsPrompt.style.display = 'none';
+                    if (commentsContent) commentsContent.style.display = 'block';
+                } else {
+                    if (notesPrompt) notesPrompt.style.display = 'block';
+                    if (notesForm) notesForm.style.display = 'none';
+                    if (commentsPrompt) commentsPrompt.style.display = 'block';
+                    if (commentsContent) commentsContent.style.display = 'none';
+                }
+            });
+        }
+
+        // --- Auth Modal ---
+        function showAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.add('active');
+
+            if (!firebaseUIInstance) {
+                firebaseUIInstance = new firebaseui.auth.AuthUI(firebase.auth());
+            }
+
+            const uiConfig = {
+                signInSuccessUrl: undefined,
+                signInOptions: [
+                    {
+                        provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+                        requireDisplayName: true
+                    }
+                ],
+                callbacks: {
+                    signInSuccessWithAuthResult: function() {
+                        hideAuthModal();
+                        return false; // don't redirect
+                    }
+                }
+            };
+
+            // FirebaseUI may already be rendered; delete and re-render
+            firebaseUIInstance.reset();
+            firebaseUIInstance.start('#firebaseui-auth-container', uiConfig);
+        }
+
+        function hideAuthModal() {
+            document.getElementById('auth-modal').classList.remove('active');
+        }
+
+        function signOut() {
+            firebase.auth().signOut();
+        }
+
+        // Close modal when clicking backdrop
+        document.getElementById('auth-modal')?.addEventListener('click', function(e) {
+            if (e.target === this) hideAuthModal();
+        });
+
+        // --- Notes ---
+        function loadNoteForCurrentTarget() {
+            if (!currentUser || !currentDetailTarget) return;
+
+            const type = currentDetailTarget.type;
+            const textarea = document.getElementById(`${type}-notes-input`);
+            const status = document.getElementById(`${type}-notes-status`);
+            if (!textarea) return;
+
+            textarea.value = '';
+            if (status) status.textContent = 'Loading...';
+
+            db.collection('notes')
+                .where('userId', '==', currentUser.uid)
+                .where('targetId', '==', currentDetailTarget.id)
+                .where('targetType', '==', type)
+                .limit(1)
+                .get()
+                .then(snapshot => {
+                    if (!snapshot.empty) {
+                        const note = snapshot.docs[0].data();
+                        textarea.value = note.content || '';
+                        textarea.dataset.noteId = snapshot.docs[0].id;
+                    } else {
+                        textarea.dataset.noteId = '';
+                    }
+                    if (status) status.textContent = '';
+                })
+                .catch(err => {
+                    console.error('Error loading note:', err);
+                    if (status) status.textContent = 'Error loading notes';
+                });
+        }
+
+        function saveNote(type) {
+            if (!currentUser || !currentDetailTarget) return;
+
+            const textarea = document.getElementById(`${type}-notes-input`);
+            const status = document.getElementById(`${type}-notes-status`);
+            if (!textarea) return;
+
+            const content = textarea.value.trim();
+            const noteId = textarea.dataset.noteId;
+
+            if (status) status.textContent = 'Saving...';
+
+            const noteData = {
+                userId: currentUser.uid,
+                targetId: currentDetailTarget.id,
+                targetType: type,
+                content: content,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            let promise;
+            if (noteId) {
+                // Update existing note
+                if (content === '') {
+                    // Delete if empty
+                    promise = db.collection('notes').doc(noteId).delete().then(() => {
+                        textarea.dataset.noteId = '';
+                    });
+                } else {
+                    promise = db.collection('notes').doc(noteId).update(noteData);
+                }
+            } else if (content !== '') {
+                // Create new note
+                noteData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                promise = db.collection('notes').add(noteData).then(docRef => {
+                    textarea.dataset.noteId = docRef.id;
+                });
+            } else {
+                if (status) status.textContent = '';
+                return;
+            }
+
+            promise
+                .then(() => { if (status) status.textContent = 'Saved'; })
+                .catch(err => {
+                    console.error('Error saving note:', err);
+                    if (status) status.textContent = 'Error saving';
+                });
+        }
+
+        // Debounced auto-save for notes textareas
+        function setupNoteAutoSave(type) {
+            const textarea = document.getElementById(`${type}-notes-input`);
+            if (!textarea) return;
+
+            textarea.addEventListener('input', () => {
+                const status = document.getElementById(`${type}-notes-status`);
+                if (status) status.textContent = 'Typing...';
+                clearTimeout(noteSaveTimer);
+                noteSaveTimer = setTimeout(() => saveNote(type), 1000);
+            });
+        }
+
+        // Set up auto-save listeners once DOM is ready
+        setupNoteAutoSave('position');
+        setupNoteAutoSave('technique');
+
+        // --- Comments ---
+        function loadCommentsForCurrentTarget() {
+            if (!currentUser || !currentDetailTarget) return;
+
+            const type = currentDetailTarget.type;
+            const listEl = document.getElementById(`${type}-comments-list`);
+            const countEl = document.getElementById(`${type}-comment-count`);
+            if (!listEl) return;
+
+            listEl.innerHTML = '<div class="comments-empty">Loading comments...</div>';
+
+            db.collection('comments')
+                .where('targetId', '==', currentDetailTarget.id)
+                .where('targetType', '==', type)
+                .orderBy('createdAt', 'desc')
+                .limit(50)
+                .get()
+                .then(snapshot => {
+                    if (snapshot.empty) {
+                        listEl.innerHTML = '<div class="comments-empty">No comments yet. Be the first to share an insight!</div>';
+                        if (countEl) countEl.textContent = '';
+                        return;
+                    }
+
+                    if (countEl) countEl.textContent = `(${snapshot.size})`;
+                    listEl.innerHTML = '';
+
+                    snapshot.docs.forEach(doc => {
+                        const comment = doc.data();
+                        const commentEl = document.createElement('div');
+                        commentEl.className = 'comment-card';
+
+                        const timeStr = comment.createdAt ? formatRelativeTime(comment.createdAt.toDate()) : 'Just now';
+                        const isOwn = currentUser && comment.userId === currentUser.uid;
+
+                        commentEl.innerHTML = `
+                            <div class="comment-header">
+                                <span class="comment-author">${escapeHtml(comment.displayName || 'Anonymous')}</span>
+                                <span class="comment-time">${timeStr}</span>
+                            </div>
+                            <div class="comment-body">${escapeHtml(comment.content)}</div>
+                            ${isOwn ? `<button class="comment-delete" onclick="deleteComment('${doc.id}', '${type}')">Delete</button>` : ''}
+                        `;
+                        listEl.appendChild(commentEl);
+                    });
+                })
+                .catch(err => {
+                    console.error('Error loading comments:', err);
+                    // If the error is about a missing index, show a helpful message
+                    if (err.code === 'failed-precondition') {
+                        listEl.innerHTML = '<div class="comments-empty">Comments are being set up. Please try again in a few minutes.</div>';
+                    } else {
+                        listEl.innerHTML = '<div class="comments-empty">Error loading comments</div>';
+                    }
+                });
+        }
+
+        function postCommentHandler(type) {
+            if (!currentUser || !currentDetailTarget) return;
+
+            const input = document.getElementById(`${type}-comment-input`);
+            const btn = document.getElementById(`${type}-comment-post`);
+            if (!input) return;
+
+            const content = input.value.trim();
+            if (!content) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Posting...';
+
+            db.collection('comments').add({
+                userId: currentUser.uid,
+                displayName: currentUser.displayName || currentUser.email || 'Anonymous',
+                targetId: currentDetailTarget.id,
+                targetType: type,
+                content: content,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                input.value = '';
+                btn.disabled = false;
+                btn.textContent = 'Post Comment';
+                loadCommentsForCurrentTarget();
+            })
+            .catch(err => {
+                console.error('Error posting comment:', err);
+                btn.disabled = false;
+                btn.textContent = 'Post Comment';
+                alert('Error posting comment. Please try again.');
+            });
+        }
+
+        function deleteComment(commentId, type) {
+            if (!confirm('Delete this comment?')) return;
+
+            db.collection('comments').doc(commentId).delete()
+                .then(() => loadCommentsForCurrentTarget())
+                .catch(err => {
+                    console.error('Error deleting comment:', err);
+                    alert('Error deleting comment. Please try again.');
+                });
+        }
+
+        // --- Helpers ---
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatRelativeTime(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 30) return `${diffDays}d ago`;
+            return date.toLocaleDateString();
+        }
+
+        // ============================================================
         // Positions Data
         const positionsData = [
             {
@@ -5083,10 +5824,16 @@
                 position.objectives.map(obj => `<li>${obj}</li>`).join('');
             document.getElementById('position-keypoints').innerHTML = 
                 position.keyPoints.map(kp => `<li>${kp}</li>`).join('');
-            document.getElementById('position-mistakes').innerHTML = 
+            document.getElementById('position-mistakes').innerHTML =
                 position.commonMistakes.map(cm => `<li>${cm}</li>`).join('');
+
+            // Set current target and load notes/comments
+            currentDetailTarget = { id: position.id, type: 'position', name: position.name };
+            updateNotesAndCommentsVisibility();
+            loadNoteForCurrentTarget();
+            loadCommentsForCurrentTarget();
         }
-        
+
         // Show technique detail
         function showTechniqueDetail(technique) {
             document.getElementById('diagram-container').style.display = 'none';
@@ -5112,10 +5859,16 @@
                 technique.keyPoints.map(kp => `<li>${kp}</li>`).join('');
             document.getElementById('technique-mistakes').innerHTML = 
                 technique.commonMistakes.map(cm => `<li>${cm}</li>`).join('');
-            document.getElementById('technique-variations').innerHTML = 
+            document.getElementById('technique-variations').innerHTML =
                 technique.variations.map(v => `<li>${v}</li>`).join('');
+
+            // Set current target and load notes/comments
+            currentDetailTarget = { id: technique.id, type: 'technique', name: technique.name };
+            updateNotesAndCommentsVisibility();
+            loadNoteForCurrentTarget();
+            loadCommentsForCurrentTarget();
         }
-        
+
         // Show diagram
         function showDiagram() {
             document.getElementById('diagram-container').style.display = 'block';
@@ -5125,6 +5878,7 @@
             // Restore hint (CSS media query controls whether it actually shows)
             const hint = document.querySelector('.mobile-hint');
             if (hint) hint.style.display = '';
+            currentDetailTarget = null;
         }
         
         // Handle window resize
