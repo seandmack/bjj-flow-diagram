@@ -13,9 +13,9 @@ service cloud.firestore {
       allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
     }
 
-    // Community comments — readable by any authenticated user, writable/deletable by owner only
+    // Community comments — readable by anyone, writable/deletable by authenticated owner only
     match /comments/{commentId} {
-      allow read: if request.auth != null;
+      allow read: if true;
       allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
       allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
     }

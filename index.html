@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BJJ Technique Flow Diagram</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥋</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Firebase compat SDK (no bundler needed) -->
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -1010,7 +1011,7 @@
     <header>
         <div class="header-top-row">
             <div>
-                <h1>Brazilian Jiu-Jitsu Flow Diagram</h1>
+                <h1 id="site-title" style="cursor:pointer;">Brazilian Jiu-Jitsu Flow Diagram</h1>
                 <p class="subtitle">Position Hierarchy & Technique Relationships</p>
             </div>
             <div class="auth-controls" id="auth-controls">
@@ -1134,14 +1135,12 @@
             <!-- Comments Section (position) -->
             <div class="comments-section" id="position-comments-section">
                 <h3>Community Comments <span class="comment-count" id="position-comment-count"></span></h3>
-                <div id="position-comments-auth-prompt" class="auth-prompt">Sign in to view and post comments</div>
-                <div id="position-comments-content" style="display:none;">
-                    <div class="comments-list" id="position-comments-list"></div>
-                    <div class="comment-form">
-                        <textarea id="position-comment-input" placeholder="Share an insight or tip..."></textarea>
-                        <div class="comment-form-actions">
-                            <button class="comment-post-btn" id="position-comment-post" onclick="postCommentHandler('position')">Post Comment</button>
-                        </div>
+                <div class="comments-list" id="position-comments-list"></div>
+                <div id="position-comments-auth-prompt" class="auth-prompt">Sign in to post comments</div>
+                <div id="position-comments-form" class="comment-form" style="display:none;">
+                    <textarea id="position-comment-input" placeholder="Share an insight or tip..."></textarea>
+                    <div class="comment-form-actions">
+                        <button class="comment-post-btn" id="position-comment-post" onclick="postCommentHandler('position')">Post Comment</button>
                     </div>
                 </div>
             </div>
@@ -1204,14 +1203,12 @@
             <!-- Comments Section (technique) -->
             <div class="comments-section" id="technique-comments-section">
                 <h3>Community Comments <span class="comment-count" id="technique-comment-count"></span></h3>
-                <div id="technique-comments-auth-prompt" class="auth-prompt">Sign in to view and post comments</div>
-                <div id="technique-comments-content" style="display:none;">
-                    <div class="comments-list" id="technique-comments-list"></div>
-                    <div class="comment-form">
-                        <textarea id="technique-comment-input" placeholder="Share an insight or tip..."></textarea>
-                        <div class="comment-form-actions">
-                            <button class="comment-post-btn" id="technique-comment-post" onclick="postCommentHandler('technique')">Post Comment</button>
-                        </div>
+                <div class="comments-list" id="technique-comments-list"></div>
+                <div id="technique-comments-auth-prompt" class="auth-prompt">Sign in to post comments</div>
+                <div id="technique-comments-form" class="comment-form" style="display:none;">
+                    <textarea id="technique-comment-input" placeholder="Share an insight or tip..."></textarea>
+                    <div class="comment-form-actions">
+                        <button class="comment-post-btn" id="technique-comment-post" onclick="postCommentHandler('technique')">Post Comment</button>
                     </div>
                 </div>
             </div>
@@ -1314,18 +1311,18 @@
                 const notesPrompt = document.getElementById(`${type}-notes-auth-prompt`);
                 const notesForm = document.getElementById(`${type}-notes-form`);
                 const commentsPrompt = document.getElementById(`${type}-comments-auth-prompt`);
-                const commentsContent = document.getElementById(`${type}-comments-content`);
+                const commentsForm = document.getElementById(`${type}-comments-form`);
 
                 if (currentUser) {
                     if (notesPrompt) notesPrompt.style.display = 'none';
                     if (notesForm) notesForm.style.display = 'block';
                     if (commentsPrompt) commentsPrompt.style.display = 'none';
-                    if (commentsContent) commentsContent.style.display = 'block';
+                    if (commentsForm) commentsForm.style.display = 'block';
                 } else {
                     if (notesPrompt) notesPrompt.style.display = 'block';
                     if (notesForm) notesForm.style.display = 'none';
                     if (commentsPrompt) commentsPrompt.style.display = 'block';
-                    if (commentsContent) commentsContent.style.display = 'none';
+                    if (commentsForm) commentsForm.style.display = 'none';
                 }
             });
         }
@@ -1555,7 +1552,7 @@
 
         // --- Comments ---
         function loadCommentsForCurrentTarget() {
-            if (!currentUser || !currentDetailTarget) return;
+            if (!currentDetailTarget) return;
 
             const type = currentDetailTarget.type;
             const listEl = document.getElementById(`${type}-comments-list`);
@@ -5232,6 +5229,7 @@
         function setupBackButtons() {
             document.getElementById('position-back-btn').addEventListener('click', showDiagram);
             document.getElementById('technique-back-btn').addEventListener('click', showDiagram);
+            document.getElementById('site-title').addEventListener('click', showDiagram);
         }
         
         // Create D3 Diagram
